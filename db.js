@@ -1,28 +1,41 @@
 const {v4} = require ("uuid");
-global.users = [];
+const fs = require ("fs");
+const { json } = require("express");
+const FILE_PATH = require("path").join(__dirname, "users.json");
 
 function findUser(){
-    return global.users;
+
+if(!fs.existsSync(FILE_PATH)) return [];
+
+const rawData = fs.readFileSync(FILE_PATH);
+return JSON.parse(rawData);
    
 }
 function findUsers(id){
-    return global.users.find(item => item.id === id);
+    return findUser().find(item => item.id === id);
     
 } 
 function insertUser(user){
+    const users = findUser();
     user.id = v4();
-    console.log(user.id)
-    global.users.push(user);
-    console.log(global.users)
+
+      users.push(user);
+    fs.writeFileSync(FILE_PATH, JSON.stringify(users));
+    return user;
 }
 
 function updateUser(id, user){
 
-    return global.users.forEach((item, index, array) => {
+    const users = findUser();
+
+    users.forEach((item, index, array) => {
         if (item.id === id){
             user.id = id;
             array [index] = user; 
         }
+
+        fs.writeFileSync(FILE_PATH, JSON.stringify(users));
+    return user;
 
         
     });
@@ -30,12 +43,19 @@ function updateUser(id, user){
 }
 
 function deleteUser(id){
+    const users = findUser();
 
-    return global.users.forEach ((item, index, array)=>{
+    users.forEach ((item, index, array)=>{
+      
         if(item.id === id )
-
         array.splice(index,1);
+
+        fs.writeFileSync(FILE_PATH, JSON.stringify(users));
+      
+        
     })
+
+   
 
 }
 
