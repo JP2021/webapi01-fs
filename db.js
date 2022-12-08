@@ -24,22 +24,25 @@ function insertUser(user){
     return user;
 }
 
-function updateUser(id, user){
+function updateUser(id, user, overwrite){
 
     const users = findUser();
 
-    users.forEach((item, index, array) => {
-        if (item.id === id){
-            user.id = id;
-            array [index] = user; 
-        }
-
+   const index = users.findIndex(item => item.id === id);
+   if(index === -1) return {};
+   
+   if(overwrite)
+   users[index] = user;
+   else{
+    for ( let key in user){
+        users[index][key] = user[key]
+    };
+   }
         fs.writeFileSync(FILE_PATH, JSON.stringify(users));
-    return user;
+    return users[index];
 
         
-    });
-
+ 
 }
 
 function deleteUser(id){
